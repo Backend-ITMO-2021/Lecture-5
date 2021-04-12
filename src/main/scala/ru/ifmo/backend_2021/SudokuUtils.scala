@@ -3,7 +3,7 @@ package ru.ifmo.backend_2021
 
 object SudokuUtils {
   val ROW_DELIMITER = "--+-------+-------+-------+"
-  val SQUARE_DELIMITER = " |"
+  val SQUARE_DELIMITER = "|"
 
 
   def main(args: Array[String]): Unit = {
@@ -37,25 +37,29 @@ object SudokuUtils {
   }
 
   def renderSudoku(grid: List[List[Int]]): String = {
-    val sb = new StringBuilder()
-    sb.append(s"\n  | 1 2 3 | 4 5 6 | 7 8 9 |\n")
-    for (i <- grid.indices) {
-      if (i % 3 == 0) {
-        sb.append(s"$ROW_DELIMITER\n")
-      }
-      sb.append(s"$i")
-      for (j <- grid(i).indices) {
-        if (j % 3 == 0) {
-          sb.append(s"$SQUARE_DELIMITER")
+    grid.flatMap(row => {
+      row.zipWithIndex.map{case(cell, columnIndex) =>
+        val rowIndex = grid.indexOf(row)
+        if (rowIndex == 0 && columnIndex == 0) {
+          s"\n  | 1 2 3 | 4 5 6 | 7 8 9 |\n$ROW_DELIMITER\n0 $SQUARE_DELIMITER ${cellToString(cell)}"
+        } else if (columnIndex == 0) {
+          s"$rowIndex $SQUARE_DELIMITER ${cellToString(cell)}"
+        }else if (columnIndex == row.length - 1 && rowIndex % 3 == 2) {
+          s" ${cellToString(cell)} $SQUARE_DELIMITER\n$ROW_DELIMITER\n"
+        }else if (columnIndex % 3 == 2 && columnIndex == row.length - 1 && rowIndex != grid.length - 1) {
+          s" ${cellToString(cell)} $SQUARE_DELIMITER\n"
+        } else if (columnIndex % 3 == 2 && columnIndex != row.length - 1) {
+          s" ${cellToString(cell)} $SQUARE_DELIMITER"
+        }  else if (columnIndex == row.length - 1 && rowIndex == grid.length - 1) {
+          s" ${cellToString(cell)} $SQUARE_DELIMITER\n$ROW_DELIMITER\n"
+        } else {
+          s" ${cellToString(cell)}"
         }
-        val el = grid(i)(j)
-        sb.append(s" ${if (el == 0) " " else el}")
       }
-      sb.append(s"$SQUARE_DELIMITER\n")
-    }
-    sb.append(s"$ROW_DELIMITER\n")
-    sb.toString()
+    }).mkString("")
   }
+
+  private def cellToString(cell: Int) = if (cell == 0) " " else cell.toString
 
   def isCellValid(number: Int, row: List[Int], column: List[Int], square: List[Int]): Boolean = {
     number == 0 || column.count(el => {
