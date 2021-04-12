@@ -1,7 +1,5 @@
 package ru.ifmo.backend_2021
 
-import scala.collection.mutable.ListBuffer
-
 class BacktrackingPlayer(val field: List[List[Int]]) {
   def solve(x: Int = -1, y: Int = -1, currentField: List[List[Int]] = field): List[(Int, Int, Int)] = {
 

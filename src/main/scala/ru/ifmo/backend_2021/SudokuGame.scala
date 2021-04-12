@@ -9,7 +9,7 @@ class SudokuGame(val field: List[List[Int]]) {
     println(SudokuUtils.renderSudoku(sudoku.toList))
 
     while (!isGameFinished(sudoku)) {
-      println("Input row, col and value i.e. \"1 2 9\" (each index starts from 1):")
+      println("Input row, col and value i.e. \"1 2 9\" (each index starts from 1!):")
 
       val input = readLine().split(" ")
 
