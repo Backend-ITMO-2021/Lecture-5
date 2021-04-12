@@ -50,33 +50,60 @@ object SudokuUtils {
     true
   }
 
-  def renderSudoku(grid: List[List[Int]]): String = {
-    val sb = new StringBuilder()
-    sb.append("\n  | 1 2 3 | 4 5 6 | 7 8 9 |")
-    grid.zipWithIndex.foreach{
-      case(x, i) =>
-        if (i % 3 == 0) {
-          sb.append("\n--+-------+-------+-------+")
+  def sudokuStringBuilder(grid: List[List[Int]], string: String, row: Int, col: Int, changeRow: Boolean): String = {
+    if (row % 3 == 0 & changeRow & row <= 8) {
+      val newString = string.concat("\n--+-------+-------+-------+\n" + row + " ")
+      sudokuStringBuilder(grid, newString, row, col, changeRow = false)
+    } else if (row % 3 != 0 & changeRow & row <= 8) {
+      val newString = string.concat("\n" + row + " ")
+      sudokuStringBuilder(grid, newString, row, col, changeRow = false)
+    } else if (!changeRow & row <= 8) {
+      if (col % 3 == 0 & col < 8) {
+        if (grid(row)(col) == 0) {
+          val newString = string.concat("| " + "  ")
+          sudokuStringBuilder(grid, newString, row, col+1, changeRow = false)
+        } else if (grid(row)(col) < 0) {
+          val newString = string.concat("| " + "[" + -grid(row)(col) + "]")
+          sudokuStringBuilder(grid, newString, row, col+1, changeRow = false)
+        } else {
+          val newString = string.concat("| " + grid(row)(col) + " ")
+          sudokuStringBuilder(grid, newString, row, col+1, changeRow = false)
         }
-        sb.append("\n" + i + " ")
-        x.zipWithIndex foreach {
-          case (y, j) =>
-            if (j % 3 == 0) {
-              sb.append("| ")
-            }
-            if (y == 0) {
-              sb.append("  ")
-            } else if (y < 0) {
-              sb.append("[").append(-y).append("]")
-            } else {
-              sb.append(y + " ")
-            }
+      } else if (col == 8) {
+        if (grid(row)(col) == 0) {
+          val newString = string.concat("  |")
+          sudokuStringBuilder(grid, newString, row + 1, 0, changeRow = true)
+        } else if (grid(row)(col) < 0) {
+          val newString = string.concat("[" + -grid(row)(col) + "]|")
+          sudokuStringBuilder(grid, newString, row + 1, 0, changeRow = true)
+        } else {
+          val newString = string.concat(grid(row)(col) + " |")
+          sudokuStringBuilder(grid, newString, row + 1, 0, changeRow = true)
         }
-        sb.append("|")
+      } else if (col % 3 != 0 & col < 8) {
+        if (grid(row)(col) == 0) {
+          val newString = string.concat("  ")
+          sudokuStringBuilder(grid, newString, row, col+1, changeRow = false)
+        } else if (grid(row)(col) < 0) {
+          val newString = string.concat("[" + -grid(row)(col) + "]")
+          sudokuStringBuilder(grid, newString, row, col+1, changeRow = false)
+        } else {
+          val newString = string.concat(grid(row)(col) + " ")
+          sudokuStringBuilder(grid, newString, row, col+1, changeRow = false)
+        }
+      } else {
+        string
+      }
+    } else {
+      string
     }
-    sb.append("\n--+-------+-------+-------+\n")
-    println(sb)
-    sb.toString()
+  }
+
+  def renderSudoku(grid: List[List[Int]]): String = {
+    val start = sudokuStringBuilder(grid, "\n  | 1 2 3 | 4 5 6 | 7 8 9 |", 0, 0, changeRow = true)
+    val field = start.concat("\n--+-------+-------+-------+\n")
+    println(field)
+    field
   }
 
   def findEmpty(grid: List[List[Int]]): List[Int] = {
@@ -112,25 +139,29 @@ object SudokuUtils {
     List()
   }
 
-  def isValidInput(string: StringBuilder): Boolean = {
-    val len = string.toString().replaceAll(" ", "").length
-    if (len == 3 & string.toString().replaceAll(" ", "").matches("[1-9]+")) {
+  def isValidInput(string: String): Boolean = {
+    val len = string.replaceAll(" ", "").length
+    if (len == 3 & string.replaceAll(" ", "").matches("[1-9]+")) {
         return true
       }
     println("Invalid input. Try again:")
     false
   }
 
+  def inputBuilder(string: String): String = {
+    if (!isValidInput(string)) {
+      val newString = readLine()
+      return inputBuilder(newString)
+    }
+    string
+  }
+
   def _game(grid: List[List[Int]], solvedSudoku: List[List[Int]]): Any = {
     println("Enter the number of the row, column, and the number you want to put in the cell, separated by a space:")
-    val sb = new StringBuilder()
-    do {
-      sb.clear()
-      sb.append(readLine())
-    } while (!isValidInput(sb))
 
-    println(sb.toString())
-    val input = sb.toString().replaceAll(" ", "").split("")
+    val testInput = readLine()
+    val input = inputBuilder(testInput).replaceAll(" ", "").split("")
+
     val changedSudoku = changeValue(grid, input(0).toInt-1, input(1).toInt-1, input(2).toInt)
     if (changedSudoku == solvedSudoku) {
       println("\nYou have solved sudoku!")
