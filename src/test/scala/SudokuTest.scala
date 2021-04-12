@@ -50,12 +50,32 @@ class SudokuTest extends AnyFunSuite {
 --+-------+-------+-------+
 """
 
+  private lazy val solveSudokuResult =
+    List(
+      List(3, 1, 6, 5, 7, 8, 4, 9, 2),
+      List(5, 2, 9, 1, 3, 4, 7, 6, 8),
+      List(4, 8, 7, 6, 2, 9, 5, 3, 1),
+
+      List(2, 6, 3, 4, 1, 5, 9, 8, 7),
+      List(9, 7, 4, 8, 6, 3, 1, 2, 5),
+      List(8, 5, 1, 7, 9, 2, 6, 4, 3),
+
+      List(1, 3, 8, 9, 4, 7, 2, 5, 6),
+      List(6, 9, 2, 3, 5, 1, 8, 7, 4),
+      List(7, 4, 5, 2, 8, 6, 3, 1, 9)
+    )
+
   test("isValidSudoku") {
     assert(SudokuUtils.isValidSudoku(correctSudoku))
     assert(!SudokuUtils.isValidSudoku(incorrectSudoku))
+    assert(SudokuUtils.isValidSudoku(solveSudokuResult))
   }
 
   test("renderSudoku") {
     assertResult(renderSudokuResult)(SudokuUtils.renderSudoku(correctSudoku))
+  }
+
+  test("solveSudoku") {
+    assertResult(solveSudokuResult)(SudokuUtils.solveSudoku(correctSudoku))
   }
 }
