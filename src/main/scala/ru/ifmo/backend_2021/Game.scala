@@ -39,9 +39,4 @@ class Game(var field: List[List[Int]], player: Player = new Human) {
     println(Console.RED + "Нет решения" + Console.RESET)
   }
 
-//  def correctInput(input: Array[String]): Boolean = {
-//    input.length == 3 && input(0).toInt > 0 && input(0).toInt < 10 && input(1).toInt >
-//      0 && input(1).toInt < 10 && input(2).toInt > 0 && input(2).toInt < 10
-//  }
-
 }

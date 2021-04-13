@@ -1,37 +1,30 @@
 package ru.ifmo.backend_2021
-import scala.util.control.Breaks._
 
 object SudokuUtils {
   def isValidSudoku(rawSudoku: List[List[Int]]): Boolean = {
-    var result = true
     for (curStep <- Range(0, 9))
         if (!isValidRow(rawSudoku, curStep) || !isValidCol(rawSudoku, curStep)
           || !isValidSquare(rawSudoku, curStep / 3 * 3, curStep % 3 * 3))
-          result = false
-    result
+          return false
+    true
   }
 
   def renderSudoku(grid: List[List[Int]], incorrectPos: List[(Int, Int)] = null): String = {
-    var sudokuString = "\n  | 1 2 3 | 4 5 6 | 7 8 9 |\n"
-    for (curRow <- Range(0, 9)) {
-      if (curRow % 3 == 0)
-        sudokuString += "--+-------+-------+-------+\n"
-      sudokuString += curRow.toString + " "
-      for (curCol <- Range(0, 9)) {
-        if (curCol % 3 == 0)
-          sudokuString += "| "
-        if (grid(curRow)(curCol) != 0) {
-          if (incorrectPos != null && incorrectPos.contains((curRow, curCol)))
-            sudokuString += Console.RED + grid(curRow)(curCol).toString + Console.RESET + " "
-          else
-            sudokuString += grid(curRow)(curCol).toString + " "
-        } else
-          sudokuString += "  "
+    grid.flatMap(rowList => {
+      rowList.zipWithIndex.map{case(number, col) =>
+        val row = grid.indexOf(rowList)
+        val startStr = if (row == 0 && col == 0) "\n  | 1 2 3 | 4 5 6 | 7 8 9 |\n--+-------+-------+-------+\n0 | " else
+          if (col == 0) s"$row | " else " "
+        val numberStr =  if (number == 0) " " else
+          if (incorrectPos != null && incorrectPos.contains((row, col)))
+            Console.RED + number.toString + Console.RESET else number.toString
+        val endStr = if (col == rowList.length - 1 && row % 3 == 2) " |\n--+-------+-------+-------+\n" else
+          if (col % 3 == 2 && col == rowList.length - 1 && row != grid.length - 1) " |\n" else
+            if (col % 3 == 2 && col != rowList.length - 1) " |" else
+              if (col == rowList.length - 1 && row == grid.length - 1) " |\n--+-------+-------+-------+\n" else ""
+        startStr + numberStr + endStr
       }
-      sudokuString += "|\n"
-    }
-    sudokuString += "--+-------+-------+-------+\n"
-    sudokuString
+    }).mkString("")
   }
 
   private def isValidRow(grid: List[List[Int]], row: Int): Boolean = {
