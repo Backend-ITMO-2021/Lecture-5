@@ -47,17 +47,13 @@ object SudokuUtils {
         sudoku
       }
     }
-    val testSudoku = {
-      if (isValidSudoku(newSudoku)) {
-        newSudoku
-      } else {
-        sudoku
-      }
-    }
-    if(testSudoku==sudoku){
+    val valid = isValidSudoku(newSudoku)
+    val testSudoku = newSudoku
+
+    if(!valid){
       print("не валидно")
       print(showEx(testSudoku, x,y,value))
-      playSudoku(testSudoku);
+      playSudoku(sudoku);
     }
     playSudoku(newSudoku);
   }
@@ -65,8 +61,73 @@ object SudokuUtils {
   def showNumsSquad(testSudoku: List[List[Int]], s: Int, c: Int){
 
   }
-  def showEx(rawSudoku: List[List[Int]], x:Int, y:Int, value:Int): Unit = {
-    val symbols = ("①", "②",  "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨")
+  def showEx(rawSudoku: List[List[Int]], x:Int, y:Int, value:Int): String = {
+    val symbols = List("①", "②",  "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨")
+    def isZero(num: Int): String = {
+      if (num == 0)
+        return " "
+      return f"$num"
+    }
+    def getSq(row: List[Int], x:Int, y:Int): Any ={
+      if(y < 3 && x < 3){
+        return Range(0, 9).map(j => getSquare(rawSudoku,0,j)).filter(_ > 0) //0
+      }
+      if(y > 2 && y < 6 && x<3){
+        return Range(0, 9).map(j => getSquare(rawSudoku,1,j)).filter(_ > 0) //1
+      }
+      if(y > 5 && y < 9 && x<3){
+        return Range(0, 9).map(j => getSquare(rawSudoku,2,j)).filter(_ > 0) //2
+      }
+      if(y < 3 && x < 6 && x>2){
+        return Range(0, 9).map(j => getSquare(rawSudoku,3,j)).filter(_ > 0) //3
+      }
+      if(y > 2 && y < 6 && x>2 && x<6){
+        return Range(0, 9).map(j => getSquare(rawSudoku,4,j)).filter(_ > 0) //4
+      }
+      if(y > 5 && y < 9 && x>2 && x<6){
+        return Range(0, 9).map(j => getSquare(rawSudoku,5,j)).filter(_ > 0) //5
+      }
+      if(y < 3 && x>5){
+        return Range(0, 9).map(j => getSquare(rawSudoku,6,j)).filter(_ > 0) //6
+      }
+      if(y > 3 && y < 6 && x>5){
+        return Range(0, 9).map(j => getSquare(rawSudoku,7,j)).filter(_ > 0) //7
+      }
+      if(y > 6 && y < 10 && x>5){
+        return Range(0, 9).map(j => getSquare(rawSudoku,8,j)).filter(_ > 0) //8
+      }
+    }
+
+    def addRow(row: List[Int], rowIndex: Int): String = {
+      row.zipWithIndex.map(zip => {
+        val sq = getSq(row, x,y)
+        val sq1 = getSq(row, rowIndex,zip._2)
+        if(sq == sq1 && (zip._2 + 1) % 3 == 0 && rawSudoku(x)(y) == zip._1) {
+          f"${symbols(value-1)} |"
+        }else if(sq == sq1 && rawSudoku(x)(y) == zip._1){
+          f"${symbols(value-1)}"
+        }else
+        if ((zip._2 + 1) % 3 == 0 && (zip._2==y && zip._1 ==value || rowIndex==x && zip._1 ==value)) {
+          f"${symbols(value-1)} |"
+        } else if ((zip._2 + 1) % 3 == 0) {
+          f"${isZero(zip._1)} |"
+        } else if (zip._2==y && zip._1 ==value || rowIndex==x && zip._1 ==value){
+          f"${symbols(value-1)}"
+        }else{
+          f"${isZero(zip._1)}"
+        }
+      }).mkString(" ")
+    }
+    val line = "--+-------+-------+-------+"
+
+    rawSudoku.zipWithIndex.map(str => {
+      if (str._2 == 0)
+        f"\n  | 1 2 3 | 4 5 6 | 7 8 9 |\n${line}\n${str._2} | ${addRow(str._1, str._2)}\n"
+      else if ((str._2 + 1) % 3 == 0 || (str._2 == rawSudoku.length - 1))
+        f"${str._2} | ${addRow(str._1, str._2)}\n$line\n"
+      else
+        f"${str._2} | ${addRow(str._1, str._2)}\n"
+    }).mkString("")
   }
 
   def getSquare(rawSudoku: List[List[Int]], i:Int, j:Int): Int ={
@@ -74,7 +135,7 @@ object SudokuUtils {
   }
 
   def isValidSudoku(rawSudoku: List[List[Int]]): Boolean = {
-    !Range(0, 9).exists { i =>
+    !Range(0, 9).exists{ i =>
       val row = Range(0, 9).map(j => rawSudoku(i)(j)).filter(_ > 0)
       val col = Range(0, 9).map(j => rawSudoku(j)(i)).filter(_ > 0)
       val square = Range(0, 9).map(j => getSquare(rawSudoku,i,j)).filter(_ > 0)
