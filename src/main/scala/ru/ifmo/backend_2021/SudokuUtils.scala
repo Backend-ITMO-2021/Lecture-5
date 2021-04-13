@@ -1,7 +1,5 @@
 package ru.ifmo.backend_2021
 
-import scala.util.control.Breaks._
-
 object SudokuUtils {
   def main(args: Array[String]): Unit = {
     val sudoku = List(
@@ -24,7 +22,7 @@ object SudokuUtils {
       action match {
         case "1" => playSudoku(List(sudoku, sudoku))
         case "2" => print(renderSudoku(backtracking(sudoku)))
-        case "3" => break
+        case "3" => sys.exit
       }
     }
 
@@ -203,43 +201,59 @@ object SudokuUtils {
     }
     return grid
   }
-  def renderSudoku(grid: List[List[Int]]): String = {
-    val result = new StringBuilder()
-    result.append("| 1 2 3 | 4 5 6 | 7 8 9 |\n")
-    result.append("--+-------+-------+-------+\n")
-    for (i <- 0 to 8) {
-      result.append(i)
-      result.append(" |")
-      for (j <- 0 to 8) {
-        result.append(" ")
-        if (grid(i)(j) < 1 || grid(i)(j) > 9) {
-          grid(i)(j) match {
-            // ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨
-            case 0 => result.append(" ")
-            case -1 => result.append("①")
-            case -2 => result.append("②")
-            case -3 => result.append("③")
-            case -4 => result.append("④")
-            case -5 => result.append("⑤")
-            case -6 => result.append("⑥")
-            case -7 => result.append("⑦")
-            case -8 => result.append("⑧")
-            case -9 => result.append("⑨")
-          }
-        } else {
-          result.append(grid(i)(j))
-        }
-        if (j%3 == 2) {
-          result.append(" ")
-          result.append("|")
-        }
+  // newRawSudoku(row).patch(col.head, Seq(-value), 1)
+  def addValuesFromString(grid: List[List[Int]], result: List[String], stringID: Int, cells: List[Int]): List[String] = {
+    if (cells.isEmpty) {
+      return result
+    }
+    if (cells.head%3 == 0) {
+      grid(stringID)(cells.head) match {
+        // ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨
+        case 0 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " +" " + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -1 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "①" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -2 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "②" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -3 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "③" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -4 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "④" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -5 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "⑤" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -6 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "⑥" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -7 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "⑦" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -8 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "⑧" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -9 => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + "⑨" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case _ => return addValuesFromString(grid, result.patch(result.length-1, Seq("| " + grid(stringID)(cells.head).toString + " "), 0), stringID, cells.patch(0, Nil, 1))
       }
-      result.append("\n")
-      if (i%3 == 2) {
-        result.append("--+-------+-------+-------+\n")
+    } else {
+      grid(stringID)(cells.head) match {
+        // ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨
+        case 0 => return addValuesFromString(grid, result.patch(result.length-1, Seq(" " + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -1 => return addValuesFromString(grid, result.patch(result.length-1, Seq("①" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -2 => return addValuesFromString(grid, result.patch(result.length-1, Seq("②" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -3 => return addValuesFromString(grid, result.patch(result.length-1, Seq("③" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -4 => return addValuesFromString(grid, result.patch(result.length-1, Seq("④" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -5 => return addValuesFromString(grid, result.patch(result.length-1, Seq("⑤" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -6 => return addValuesFromString(grid, result.patch(result.length-1, Seq("⑥" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -7 => return addValuesFromString(grid, result.patch(result.length-1, Seq("⑦" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -8 => return addValuesFromString(grid, result.patch(result.length-1, Seq("⑧" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case -9 => return addValuesFromString(grid, result.patch(result.length-1, Seq("⑨" + " "), 0), stringID, cells.patch(0, Nil, 1))
+        case _ => return addValuesFromString(grid, result.patch(result.length-1, Seq(grid(stringID)(cells.head).toString + " "), 0), stringID, cells.patch(0, Nil, 1))
       }
     }
-    return "\n  " + result.toString().trim + "\n"
+  }
+  def addValues(grid: List[List[Int]], result: List[String], strings: List[Int]): List[String] = {
+    if (strings.isEmpty) {
+      return result
+    }
+    if (strings.head%3 == 0) {
+      val new_result = addValuesFromString(grid, result.patch(result.length-1, Seq("|\n--+-------+-------+-------+"), 0), strings.head, Range(0, 9).toList)
+      return addValues(grid, new_result.patch(result.length, Seq("\n" + strings.head + " "), 0), strings.patch(0, Nil, 1))
+    } else {
+      val new_result = addValuesFromString(grid, result, strings.head, Range(0, 9).toList)
+      return addValues(grid, new_result.patch(result.length-1, Seq("|\n" + strings.head + " "), 0), strings.patch(0, Nil, 1))
+    }
+  }
+  def renderSudoku(grid: List[List[Int]]): String = {
+    val result = List("\n  | 1 2 3 | 4 5 6 | 7 8 9 ", "|\n--+-------+-------+-------+\n")
+    val new_result = addValues(grid, result, Range(0, 9).toList)
+    return new_result.mkString
   }
 }
 
