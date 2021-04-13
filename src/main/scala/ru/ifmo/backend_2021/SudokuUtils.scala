@@ -6,6 +6,9 @@ object SudokuUtils {
   val sep = "\n--+-------+-------+-------+\n"
   val header = "\n  | 1 2 3 | 4 5 6 | 7 8 9 |"
 
+  def isFilledSudoku(rawSudoku: List[List[Int]]): Boolean =
+    !rawSudoku.flatMap { l => l }.contains(0)
+
   def isValidSudoku(rawSudoku: List[List[Int]]): Boolean = !Range(0, 9).exists { i => List(
     rawSudoku(i),
     Range(0, 9).map(rawSudoku(_)(i)),
