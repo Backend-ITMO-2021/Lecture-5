@@ -35,8 +35,8 @@ object SudokuUtils {
 
     println(SudokuUtils.renderSudoku(sudokuInput1))
 
-    val game = new Game(sudokuInput2, new ComputerPlayer);
-    game.start()
+//    val game = new Game(sudokuInput2, new ComputerPlayer);
+//    game.start()
   }
 
   def isValidSudoku(rawSudoku: List[List[Int]]): Boolean = {
@@ -57,26 +57,31 @@ object SudokuUtils {
   }
 
   def renderSudoku(grid: List[List[Int]]) = {
-    val sb = new StringBuilder;
-    sb.append("\n")
     val firstString = s"  | ${Range(1, 10).map(i => if (i % 3 == 0) s"$i |" else i).mkString(" ")}"
     val horizontalBlockSeparator = firstString.replaceAll("[0-9 ]", "-").replaceAll("[|]", "+")
-    sb.append(firstString)
-    Range(0, 9).map(i => {
-      if (i % 3 == 0) {
-        sb.append("\n");
-        sb.append(horizontalBlockSeparator)
-      }
-      sb.append("\n");
-      sb.append(s"$i | ${
-        Range(0, 9).map(j => {
-          s"${if (grid(i)(j) == 0) " " else grid(i)(j)}${if (j % 3 == 2) " |" else ""}"
-        }).mkString(" ")
-      }")
-    })
-    sb.append("\n");
-    sb.append(horizontalBlockSeparator)
-    sb.append("\n");
-    sb.toString()
+    grid.zipWithIndex.map(zip => {
+      val row = zip._1
+      val rowIndex = zip._2
+      if (rowIndex == 0)
+        s"\n$firstString\n${horizontalBlockSeparator}\n${renderRow(row, rowIndex)}"
+      else if (rowIndex == grid.length - 1)
+        s"${renderRow(row, rowIndex)}\n$horizontalBlockSeparator\n"
+      else if (rowIndex % 3 == 2)
+        s"${renderRow(row, rowIndex)}\n$horizontalBlockSeparator"
+      else
+        s"${renderRow(row, rowIndex)}"
+    }).mkString("\n")
+  }
+
+  def renderRow(row: List[Int], rowIndex: Int): String = {
+    row.zipWithIndex.map(zip => {
+      val column = zip._2
+      val value = if(zip._1 == 0) " " else zip._1
+      if (column == 0)
+        s"$rowIndex | $value"
+      else if ( column % 3 == 2)
+        s"$value |"
+      else value
+    }).mkString(" ")
   }
 }
