@@ -51,100 +51,56 @@ object SudokuUtils {
       if (isValidSudoku(newSudoku)) {
         newSudoku
       } else {
-        showEx(newSudoku)
+        sudoku
       }
     }
-
+    if(testSudoku==sudoku){
+      print("не валидно")
+      print(showEx(testSudoku, x,y,value))
+      playSudoku(testSudoku);
+    }
     playSudoku(newSudoku);
   }
 
-  def showEx(rawSudoku: List[List[Int]]): Unit = {
+  def showNumsSquad(testSudoku: List[List[Int]], s: Int, c: Int){
 
   }
-
-  def checkSquad(rawSudoku: List[List[Int]], s: Int, c: Int): Boolean = {
-    var nums: Set[Int] = Set();
-    for (i <- s to s + 2) {
-      for (j <- c to c + 2) {
-        if (!nums(rawSudoku(i)(j))) {
-          if (rawSudoku(i)(j) != 0)
-            nums += rawSudoku(i)(j);
-        } else {
-          return false
-        }
-      }
-    }
-    return true;
+  def showEx(rawSudoku: List[List[Int]], x:Int, y:Int, value:Int): Unit = {
+    val symbols = ("①", "②",  "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨")
   }
 
-  def checkColumn(rawSudoku: List[List[Int]], r: Int, c: Int): Boolean = {
-    var nums: Set[Int] = Set();
-    for (i <- c to 8) {
-      if (!nums(rawSudoku(r)(i))) {
-        if (rawSudoku(r)(i) != 0)
-          nums += rawSudoku(r)(i);
-      } else {
-        return false
-      }
-    }
-    return true
-  }
-
-  ///indexes:Array[Array[Int]]=Array(Array())
-  def checkRows(rawSudoku: List[List[Int]], r: Int, c: Int): Boolean = {
-    var nums: Set[Int] = Set();
-    for (i <- r to 8) {
-      if (!nums(rawSudoku(i)(c))) {
-        if (rawSudoku(i)(c) != 0)
-          nums += rawSudoku(i)(c);
-      } else {
-        return false
-      }
-    }
-    return true
+  def getSquare(rawSudoku: List[List[Int]], i:Int, j:Int): Int ={
+    return rawSudoku((i / 3) * 3 + j / 3)((i % 3) * 3 + j % 3)
   }
 
   def isValidSudoku(rawSudoku: List[List[Int]]): Boolean = {
-    //    var indexes:Array[Array[Int]]=Array()
-    //квадраты
-    val indexs: List[Int] = List(0, 3, 6)
-    indexs.foreach(index => {
-      indexs.foreach(index2 => {
-        if (!checkSquad(rawSudoku, index, index2))
-          return false
-      })
-    })
-    for (i <- 0 to 8) {
-      if (!checkColumn(rawSudoku, i, 0))
-        return false
-      if (!checkRows(rawSudoku, 0, i))
-        return false
+    !Range(0, 9).exists { i =>
+      val row = Range(0, 9).map(j => rawSudoku(i)(j)).filter(_ > 0)
+      val col = Range(0, 9).map(j => rawSudoku(j)(i)).filter(_ > 0)
+      val square = Range(0, 9).map(j => getSquare(rawSudoku,i,j)).filter(_ > 0)
+      row.distinct.length != row.length || col.distinct.length != col.length || square.distinct.length != square.length
     }
-    return true
   }
 
   def renderSudoku(grid: List[List[Int]]): String = {
     def isZero(num: Int): String = {
-      if (num == 0) {
-        return " ";
-      } else {
-        return f"$num"
-      }
+      if (num == 0)
+        return " "
+      return f"$num"
     }
-    def addRow(row: List[Int], rowIndex: Int): String = {row.zipWithIndex.map(zip => {
-      val column = zip._2
-      val value =isZero(zip._1)
-      if((column+1)%3==0)
-        f"${value} |"
-      else
-        f"${value}"
-    }).mkString(" ")
+    def addRow(row: List[Int], rowIndex: Int): String = {
+      row.zipWithIndex.map(zip => {
+        if ((zip._2 + 1) % 3 == 0)
+          f"${isZero(zip._1)} |"
+        else
+          f"${isZero(zip._1)}"
+      }).mkString(" ")
     }
     val line = "--+-------+-------+-------+"
     grid.zipWithIndex.map(str => {
       if (str._2 == 0)
         f"\n  | 1 2 3 | 4 5 6 | 7 8 9 |\n${line}\n${str._2} | ${addRow(str._1, str._2)}\n"
-      else if ((str._2+1) % 3 == 0 || (str._2 == grid.length - 1))
+      else if ((str._2 + 1) % 3 == 0 || (str._2 == grid.length - 1))
         f"${str._2} | ${addRow(str._1, str._2)}\n$line\n"
       else
         f"${str._2} | ${addRow(str._1, str._2)}\n"
