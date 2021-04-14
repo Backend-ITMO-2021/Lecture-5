@@ -3,7 +3,7 @@ package ru.ifmo.backend_2021
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
 
-class Sudoku(var box: List[List[Int]]) {
+class Sudoku(val box: List[List[Int]]) {
 
   def readUserInput(): Option[(Int, Int, Int)] = {
     val input = readLine()
@@ -29,7 +29,7 @@ class Sudoku(var box: List[List[Int]]) {
   }
 
   def play(): Unit = {
-    val field = ListBuffer.empty ++= box
+    val field = ListBuffer.from(box)
     println("Sudoku game!")
     println("Enter x y v:")
     println(SudokuUtils.renderSudoku(field.toList))
