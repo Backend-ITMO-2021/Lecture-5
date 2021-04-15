@@ -9,7 +9,7 @@ class Game(val grid: List[List[Int]]) {
 
     println(SudokuUtils.renderSudoku(sudoku.toList))
 
-    while (!isCompleted(sudoku.toList)) {
+    while (!SudokuUtils.isCompleted(sudoku.toList)) {
       println("Введите строку, столбец и значение через пробел")
       val input = readLine().split(" ")
       if (input.length != 3) {
@@ -49,13 +49,6 @@ class Game(val grid: List[List[Int]]) {
       }
     }
     println("Решено")
-  }
-
-  def isCompleted(grid: List[List[Int]]): Boolean = {
-    grid.foreach(row => {
-      if (row.contains(0)) return false
-    })
-    true
   }
 
   def isInputIncorrect(row: Int, col: Int, value: Int): Boolean =

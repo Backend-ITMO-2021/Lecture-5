@@ -2,19 +2,33 @@ package ru.ifmo.backend_2021
 
 object SudokuUtils {
   def main(args: Array[String]): Unit = {
-    new Game(List(
-      List(3, 1, 6, 5, 7, 8, 4, 9, 2),
-      List(5, 2, 9, 1, 3, 4, 7, 6, 8),
-      List(4, 8, 7, 6, 2, 9, 5, 3, 1),
+//    new Game(List(
+//      List(3, 1, 6, 5, 7, 8, 4, 9, 2),
+//      List(5, 2, 9, 1, 3, 4, 7, 6, 8),
+//      List(4, 8, 7, 6, 2, 9, 5, 3, 1),
+//
+//      List(2, 6, 3, 0, 1, 0, 0, 8, 0),
+//      List(9, 7, 4, 8, 6, 3, 0, 0, 5),
+//      List(8, 5, 1, 0, 9, 0, 6, 0, 0),
+//
+//      List(1, 3, 0, 0, 0, 0, 2, 5, 0),
+//      List(0, 0, 0, 0, 0, 0, 0, 7, 4),
+//      List(0, 0, 5, 2, 0, 6, 3, 0, 0)
+//    )).start()
 
-      List(2, 6, 3, 0, 1, 0, 0, 8, 0),
-      List(9, 7, 4, 8, 6, 3, 0, 0, 5),
-      List(8, 5, 1, 0, 9, 0, 6, 0, 0),
+    new Backtracking(List(
+          List(3, 1, 6, 5, 7, 8, 4, 9, 2),
+          List(5, 2, 9, 1, 3, 4, 7, 6, 8),
+          List(4, 8, 7, 6, 2, 9, 5, 3, 1),
 
-      List(1, 3, 0, 0, 0, 0, 2, 5, 0),
-      List(0, 0, 0, 0, 0, 0, 0, 7, 4),
-      List(0, 0, 5, 2, 0, 6, 3, 0, 0)
-    )).start()
+          List(2, 6, 3, 0, 1, 0, 0, 8, 0),
+          List(9, 7, 4, 8, 6, 3, 0, 0, 5),
+          List(8, 5, 1, 0, 9, 0, 6, 0, 0),
+
+          List(1, 3, 0, 0, 0, 0, 2, 5, 0),
+          List(0, 0, 0, 0, 0, 0, 0, 7, 4),
+          List(0, 0, 5, 2, 0, 6, 3, 0, 0)
+        )).solve()
   }
 
   def isValidSudoku(rawSudoku: List[List[Int]]): Boolean = {
@@ -48,5 +62,12 @@ object SudokuUtils {
     if (num == 0) " "
     else if (num == -1) roundedNumber(userValue - 1)
     else num
+  }
+
+  def isCompleted(grid: List[List[Int]]): Boolean = {
+    grid.foreach(row => {
+      if (row.contains(0)) return false
+    })
+    true
   }
 }
