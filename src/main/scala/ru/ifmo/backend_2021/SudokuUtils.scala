@@ -26,24 +26,27 @@ object SudokuUtils {
     }
   }
 
-  def renderSudoku(grid: List[List[Int]]) = {
+  def renderSudoku(grid: List[List[Int]], userValue: Int = -1) = {
     val header = s"  | 1 2 3 | 4 5 6 | 7 8 9 |"
     val separator = s"\n--+-------+-------+-------+"
     Range(0, 9).map(i =>
-      if(i == 0) s"\n$header$separator\n$i | " + renderRow(grid, i)
-      else if (i == 8) s"$i | " + renderRow(grid, i) + s"$separator\n"
-      else if (i % 3 == 2) s"$i | " + renderRow(grid, i) + s"$separator"
-      else s"$i | " + renderRow(grid, i)
+      if(i == 0) s"\n$header$separator\n$i | " + renderRow(grid, i, userValue)
+      else if (i == 8) s"$i | " + renderRow(grid, i, userValue) + s"$separator\n"
+      else if (i % 3 == 2) s"$i | " + renderRow(grid, i, userValue) + s"$separator"
+      else s"$i | " + renderRow(grid, i, userValue)
     ).mkString("\n")
   }
 
-  def renderRow(grid: List[List[Int]], i: Int) = {
+  def renderRow(grid: List[List[Int]], i: Int, userValue: Int) = {
     Range(0, 9).map(j =>
-      if (j % 3 == 2) nullsCheck(grid(i)(j)) + " |" else nullsCheck(grid(i)(j))
+      if (j % 3 == 2) nullsAndErrorsCheck(grid(i)(j), userValue) + " |" else nullsAndErrorsCheck(grid(i)(j), userValue)
     ).mkString(" ")
   }
 
-  def nullsCheck(num: Int) = {
-    if (num == 0) " " else num
+  def nullsAndErrorsCheck(num: Int, userValue: Int) = {
+    val roundedNumber = List("①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨")
+    if (num == 0) " "
+    else if (num == -1) roundedNumber(userValue - 1)
+    else num
   }
 }
