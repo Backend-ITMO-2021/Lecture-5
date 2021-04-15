@@ -46,23 +46,37 @@ object SudokuUtils {
   }
 
   def incorrectStep(grid: List[List[Int]], row: Int, col:Int, value:Int): List[(Int, Int)] = {
-    var incorrectPos = List((row, col))
-    if (!isValidRow(grid, row)) {
-      Range(0, 9).foreach(i =>
-        if (grid(row)(i) == value && i != col) incorrectPos = incorrectPos :+ (row, i))
-    }
+    val incorrectPos = List((row, col))
+    val incorrectRowPos = getIncorrectRowPos(grid, row, col, value)
+    val incorrectColPos = getIncorrectColPos(grid, row, col, value)
+    val incorrectSquarePos = getIncorrectSquarePos(grid, row, col, value)
+    incorrectPos ++ incorrectRowPos ++ incorrectColPos ++ incorrectSquarePos
+  }
+
+  def getIncorrectRowPos(grid: List[List[Int]], row: Int, col:Int, value:Int): List[(Int, Int)] = {
+    if (!isValidRow(grid, row)) Range(0, 9).foreach(i =>
+      if (grid(row)(i) == value && i != col)
+        return List((row, i)))
+    List((0,0)).empty
+  }
+
+  def getIncorrectColPos(grid: List[List[Int]], row: Int, col:Int, value:Int): List[(Int, Int)] = {
     if (!isValidCol(grid, col)) {
       val curGrid = grid.transpose
-      Range(0, 9).foreach(i =>
-        if (curGrid(col)(i) == value && i != row) incorrectPos = incorrectPos :+ (i, col))
+      Range(0, 9).foreach(i => if (curGrid(col)(i) == value && i != row) return List((i, col)))
     }
+    List((0,0)).empty
+  }
+
+  def getIncorrectSquarePos(grid: List[List[Int]], row: Int, col:Int, value:Int): List[(Int, Int)] = {
     if (!isValidSquare(grid, row, col)) {
       val startRow = row / 3 * 3
       val startCol = col / 3 * 3
       val curSquare = grid.slice(startRow, startRow + 3).transpose.slice(startCol, startCol + 3).transpose
       Range(0, 3).foreach(i => Range(0, 3).foreach(j =>
-        if (curSquare(i)(j) == value && startRow + i != row && startCol + j != col) incorrectPos = incorrectPos :+ (startRow + i, startCol + j)))
+        if (curSquare(i)(j) == value && startRow + i != row && startCol + j != col)
+          return List((startRow + i, startCol + j))))
     }
-    incorrectPos
+    List((0,0)).empty
   }
 }
