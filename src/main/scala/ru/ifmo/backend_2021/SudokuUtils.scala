@@ -23,7 +23,7 @@ object SudokuUtils {
 
   def renderSudoku(grid: List[List[Int]]): String = {
     val sep = "\n--+-------+-------+-------+\n"
-    val header = " | 1 2 3 | 4 5 6 | 7 8 9 |"
+    val header = "  | 1 2 3 | 4 5 6 | 7 8 9 |"
     val otherLines = grid.zipWithIndex.map(pair => (pair._1, pair._2.toString))
       .grouped(3).map(_.map(renderSudokuLine).mkString("\n")).mkString(sep)
 
