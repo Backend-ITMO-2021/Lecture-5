@@ -13,5 +13,5 @@ object Test extends App {
     List(1, 3, 0, 0, 0, 0, 2, 5, 0),
     List(0, 0, 0, 0, 0, 0, 0, 7, 4),
     List(0, 0, 5, 2, 0, 6, 3, 0, 0)
-  ), new Computer).play()
+  ), new Human).play()
 }
