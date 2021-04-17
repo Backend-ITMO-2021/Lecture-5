@@ -1,5 +1,6 @@
 import org.scalatest.funsuite.AnyFunSuite
-import ru.ifmo.backend_2021.SudokuUtils
+import ru.ifmo.backend_2021.utils.SudokuUtils
+
 
 class SudokuTest extends AnyFunSuite {
   private lazy val correctSudoku =
@@ -32,6 +33,36 @@ class SudokuTest extends AnyFunSuite {
       List(0, 0, 5, 2, 0, 6, 3, 0, 0)
     )
 
+  private lazy val myBadSudoku1 =
+    List(
+      List(3, 1, 6, 5, 7, 8, 4, 9, 2),
+      List(3, 2, 9, 1, 3, 4, 7, 6, 8),
+      List(4, 8, 7, 6, 2, 9, 5, 3, 1), // col 1 is invalid
+
+      List(2, 6, 3, 0, 1, 0, 0, 8, 0),
+      List(9, 7, 4, 8, 6, 3, 0, 0, 5),
+      List(8, 5, 1, 0, 9, 0, 6, 0, 0),
+
+      List(1, 3, 0, 0, 0, 0, 2, 5, 0),
+      List(0, 0, 0, 0, 0, 0, 0, 7, 4),
+      List(0, 0, 5, 2, 0, 6, 3, 0, 0)
+    )
+
+  private lazy val myBadSudoku2 =
+    List(
+      List(3, 1, 6, 5, 7, 8, 4, 9, 2),
+      List(5, 2, 9, 1, 3, 4, 7, 6, 8),
+      List(4, 8, 7, 6, 2, 9, 5, 3, 1),
+
+      List(2, 6, 3, 0, 1, 0, 0, 8, 0),
+      List(9, 7, 4, 8, 6, 3, 0, 0, 5),
+      List(8, 5, 1, 3, 9, 0, 6, 0, 0), // block 2 is invalid
+
+      List(1, 3, 0, 0, 0, 0, 2, 5, 0),
+      List(0, 0, 0, 0, 0, 0, 0, 7, 4),
+      List(0, 0, 5, 2, 0, 6, 3, 0, 0)
+    )
+
   private lazy val renderSudokuResult =
     """
   | 1 2 3 | 4 5 6 | 7 8 9 |
@@ -53,6 +84,8 @@ class SudokuTest extends AnyFunSuite {
   test("isValidSudoku") {
     assert(SudokuUtils.isValidSudoku(correctSudoku))
     assert(!SudokuUtils.isValidSudoku(incorrectSudoku))
+    assert(!SudokuUtils.isValidSudoku(myBadSudoku1))
+    assert(!SudokuUtils.isValidSudoku(myBadSudoku2))
   }
 
   test("renderSudoku") {
