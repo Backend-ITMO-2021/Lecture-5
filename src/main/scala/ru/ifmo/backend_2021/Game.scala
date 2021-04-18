@@ -1,56 +1,69 @@
 package ru.ifmo.backend_2021
 
-import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
 
 class Game(val grid: List[List[Int]]) {
-  def start() = {
-    val sudoku = ListBuffer.empty ++= grid
+  def start(grid: List[List[Int]] = grid): List[List[Int]] = {
+    println(SudokuUtils.renderSudoku(grid))
 
-    println(SudokuUtils.renderSudoku(sudoku.toList))
-
-    while (!SudokuUtils.isCompleted(sudoku.toList)) {
+    if (!SudokuUtils.isCompleted(grid)) {
       println("Введите строку, столбец и значение через пробел")
       val input = readLine().split(" ")
       if (input.length != 3) {
         println("Введите 3 числа")
+        start(grid)
       } else {
         try {
           val row = input(0).toInt
           val col = input(1).toInt - 1
           val value = input(2).toInt
-          if (isInputIncorrect(row, col, value)) println("Числа выходят за допустимые пределы")
-          else if (sudoku(row)(col) != 0) println("Это ячейка уже заполнена")
+          if (isInputIncorrect(row, col, value)) {
+            println("Числа выходят за допустимые пределы")
+            start(grid)
+          }
+          else if (grid(row)(col) != 0) {
+            println("Это ячейка уже заполнена")
+            start(grid)
+          }
           else {
-            sudoku(row) = sudoku(row).updated(col, value)
-            if (SudokuUtils.isValidSudoku(sudoku.toList)) println(SudokuUtils.renderSudoku(sudoku.toList))
+            val updatedGrid = grid.updated(row, grid(row).updated(col, value))
+            if (SudokuUtils.isValidSudoku(updatedGrid)) {
+              start(updatedGrid)
+            }
             else {
-              val incorrectSudoku = ListBuffer.empty ++= sudoku
-              val squareRowStartIndex = (row / 3) * 3
-              val squareColStartIndex = (col / 3) * 3
-              incorrectSudoku(row) = incorrectSudoku(row).updated(col, -1)
-              Range(0, 9).foreach(i => {
-                val currentSquareRow = squareRowStartIndex + (i / 3)
-                val currentSquareCol = squareColStartIndex + (i % 3)
-                if (incorrectSudoku(row)(i) == value) incorrectSudoku(row) = incorrectSudoku(row).updated(i, -1)
-                if (incorrectSudoku(i)(col) == value) incorrectSudoku(i) = incorrectSudoku(i).updated(col, -1)
-                if (incorrectSudoku(currentSquareRow)(currentSquareCol) == value)
-                  incorrectSudoku(currentSquareRow) = incorrectSudoku(currentSquareRow).updated(currentSquareCol, -1)
-              })
+              val errors = checkRow(updatedGrid, row, value) ++ checkCol(grid, col, value) ++ checkSquare(grid, row, col, value)
 
-              sudoku(row) = sudoku(row).updated(col, 0)
               println("Значение неверное:")
-              println(SudokuUtils.renderSudoku(incorrectSudoku.toList, value))
+              println(SudokuUtils.renderSudoku(updatedGrid, value, errors))
+
+              start(grid)
             }
           }
         } catch {
-          case _: Throwable => println("Некорректный ввод (вводите числа!)")
+          case _: Throwable =>
+            println("Некорректный ввод (вводите числа!)")
+            start(grid)
         }
       }
+    } else {
+      println("Решено!")
+      null
     }
-    println("Решено")
   }
 
   def isInputIncorrect(row: Int, col: Int, value: Int): Boolean =
     row > 8 || row < 0 || col > 8 || col < 0 || value > 9 || value < 1
+
+  def checkRow(grid: List[List[Int]], row: Int, value: Int): IndexedSeq[(Int, Int)] =
+    for (i <- 0 to 8 if grid(row)(i) == value) yield (row, i)
+
+  def checkCol(grid: List[List[Int]], col: Int, value: Int): IndexedSeq[(Int, Int)] =
+    for (i <- 0 to 8 if grid(i)(col) == value) yield (i, col)
+
+  def checkSquare(grid: List[List[Int]], row: Int, col: Int, value: Int): IndexedSeq[(Int, Int)] = {
+    val squareRowStartIndex = (row / 3) * 3
+    val squareColStartIndex = (col / 3) * 3
+    for (i <- 0 to 8 if grid(squareRowStartIndex + (i / 3))(squareColStartIndex + (i % 3)) == value)
+      yield (squareRowStartIndex + (i / 3), squareColStartIndex + (i % 3))
+  }
 }
