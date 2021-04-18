@@ -4,13 +4,16 @@ import scala.collection.mutable
 import scala.io.StdIn.readLine
 import scala.collection.mutable.ListBuffer
 
-class Game(val field: List[List[Int]]) {
-  private val grid: mutable.Seq[List[Int]] = ListBuffer.empty ++= field
+class Game(val grid: List[List[Int]]) {
 
   def start(): Unit = {
-    println(SudokuUtils.renderSudoku(grid.toList))
+    gameState(grid)
+  }
 
-    while (!SudokuUtils.isGameFinished(grid.toList)) {
+  def gameState(grid: List[List[Int]]): Unit = {
+    println(SudokuUtils.renderSudoku(grid))
+
+    while (!SudokuUtils.isGameFinished(grid)) {
       try {
         val input = readLine().split(" ").map(Integer.parseInt)
 
@@ -31,14 +34,13 @@ class Game(val field: List[List[Int]]) {
           throw new Exception("Position is already filled with value.")
         }
 
-        grid(x) = grid(x).updated(y, v)
+        val updatedGrid = grid.patch(x, Seq(grid(x).patch(y, Seq(v), 1)), 1)
 
-        if (!SudokuUtils.isValidSudoku(grid.toList)) {
-          grid(x) = grid(x).updated(y, 0)
+        if (!SudokuUtils.isValidSudoku(updatedGrid)) {
           throw new Exception("Value " + v + " is invalid in given position.")
         }
 
-        println(SudokuUtils.renderSudoku(grid.toList))
+        gameState(updatedGrid)
       }
       catch {
         case e: Exception => {
