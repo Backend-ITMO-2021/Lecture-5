@@ -1,6 +1,5 @@
 package ru.ifmo.backend_2021
 
-import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
 
 class Sudoku(val box: List[List[Int]]) {
@@ -19,8 +18,8 @@ class Sudoku(val box: List[List[Int]]) {
 
   def isInputCorrect(x: Int, y: Int, v: Int): Boolean = (x >= 1) && (x <= 9) && (y >= 1) && (y <= 9) && (v >= 1) && (v <= 9)
 
-  def isFinish(): Boolean = {
-    box.foreach(row => {
+  def isFinish(field: List[List[Int]]): Boolean = {
+    field.foreach(row => {
       if (row.contains(0)) {
         return false
       }
@@ -29,29 +28,42 @@ class Sudoku(val box: List[List[Int]]) {
   }
 
   def play(): Unit = {
-    val field = ListBuffer.from(box)
     println("Sudoku game!")
     println("Enter x y v:")
-    println(SudokuUtils.renderSudoku(field.toList))
-    while (!isFinish()) {
-      readUserInput() match {
-        case Some(values) => {
-          val (x, y ,v) = values
-          if (!isInputCorrect(x, y ,v)) {
-            println("Incorrect values!");
-          } else {
-            field(y) = field(y).updated(x - 1, v)
-            if (SudokuUtils.isValidSudoku(field.toList)) {
-              println(SudokuUtils.renderSudoku(field.toList))
+    println(SudokuUtils.renderSudoku(box))
+    step(box)
+    println("Done!")
+  }
+
+  def step(oldField: List[List[Int]]): Option[List[List[Int]]] = {
+    readUserInput() match {
+      case Some(values) => {
+        val (x, y ,v) = values
+        if (!isInputCorrect(x, y ,v)) {
+          println("Incorrect values!");
+          step(oldField)
+        } else {
+          val oldRow = oldField(y)
+          val newRow = oldRow.updated(x - 1, v)
+          val newField = oldField.updated(y, newRow)
+          if (SudokuUtils.isValidSudoku(newField)) {
+            println(SudokuUtils.renderSudoku(newField))
+            if (!isFinish(newField)) {
+              step(newField)
             } else {
-              field(y) = field(y).updated(x - 1, 0)
-              println("Wrong cell value!")
+              None
             }
+          } else {
+            println("Wrong cell value!")
+            val restoredField = newField.updated(y, oldRow)
+            step(restoredField)
           }
         }
-        case None => println("Incorrect input!")
+      }
+      case None => {
+        println("Incorrect input!")
+        step(oldField)
       }
     }
-    println("Done!")
   }
 }
