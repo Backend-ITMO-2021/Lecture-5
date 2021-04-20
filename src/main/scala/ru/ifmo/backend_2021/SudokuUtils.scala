@@ -16,19 +16,19 @@ object SudokuUtils {
     true
   }
 
-  def isUniqueInRow(rawSudoku: List[List[Int]], rowNum: Integer, colNum: Int, element: Int): (Boolean, (Int, Int)) = {
+  def isUniqueInRow(rawSudoku: List[List[Int]], rowNum: Integer, colNum: Int, element: Int): Boolean = {
     for (number <- rawSudoku(rowNum)) if (element == number && colNum != rawSudoku(rowNum).indexOf(number)) {
-        return (false, (rawSudoku(rowNum).indexOf(number), rowNum))}
+        return false}
     true
   }
 
-  def isUniqueInCol(rawSudoku: List[List[Int]], rowNum: Int, colNum: Integer, element: Int): (Boolean, (Int, Int)) = {
+  def isUniqueInCol(rawSudoku: List[List[Int]], rowNum: Int, colNum: Integer, element: Int): Boolean = {
     for (row <- rawSudoku) if (element == row(colNum) && rowNum != rawSudoku.indexOf(row)) {
-        return (false, (colNum, rawSudoku.indexOf(row)))}
+        return false}
     true
   }
 
-  def isUniqueInCell(rawSudoku: List[List[Int]], rowNum: Int, colNum: Int, element: Int): (Boolean, (Int, Int)) = {
+  def isUniqueInCell(rawSudoku: List[List[Int]], rowNum: Int, colNum: Int, element: Int): Boolean = {
     val colStart = (colNum / 3) * 3
     val rowStart = (rowNum / 3) * 3
     val colEnd = colStart + 2
@@ -36,13 +36,13 @@ object SudokuUtils {
     for (i <- rowStart to rowEnd) {
       for (j <- colStart to colEnd) {
         if (element == rawSudoku(i)(j) && i != rowNum && j != colNum) {
-        return (false, (j, i))}
+        return false}
       }
     }
     true
   }
 
-  def isSuitable(rawSudoku: List[List[Int]], rowNum: Int, colNum: Int): (Boolean, (Int, Int), String) = {
+  def isSuitable(rawSudoku: List[List[Int]], rowNum: Int, colNum: Int): Boolean = {
     val element = rawSudoku(rowNum)(colNum)
     if (rawSudoku(rowNum)(colNum) == 0) return true
     if (!(isUniqueInCell(rawSudoku, rowNum, colNum, element) && isUniqueInCol(rawSudoku, rowNum, colNum, element) && isUniqueInRow(rawSudoku, rowNum, colNum, element))) return false

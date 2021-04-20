@@ -14,6 +14,8 @@ class Game(grid: List[List[Int]]) {
         val x = input(0) - 1
         val y = input(1)
         val v = input(2)
+        
+        if (x > 8 || y > 8 || v > 9) throw new Exception("Chosen cell or value are out of bounds")
 
         if (grid(y)(x) != 0) {
           throw new Exception("Chosen cell already has a value")
